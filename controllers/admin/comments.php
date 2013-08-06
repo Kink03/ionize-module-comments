@@ -47,7 +47,7 @@ class Comments extends Module_Admin
         // Send the article to the view
         $data['article'] = $object;
 
-        if (in_array('comment_allow', $object)) { //just article, not page or whatever!
+        if (array_key_exists('comment_allow', $object)) { //just article, not page or whatever!
             $data['comment_allow'] = $data['article']['comment_allow'];
             $data['comments'] = $CI->comment_model->list_by_article($data['article']['id_article']);
         }
