@@ -47,10 +47,11 @@ class Comments extends Module_Admin
         // Send the article to the view
         $data['article'] = $object;
 
-        $data['comment_allow'] = $data['article']['comment_allow'];
-        $data['comments'] = $CI->comment_model->list_by_article($data['article']['id_article']);
-        //$data['comments'] = "test";
-     
+        if (in_array('comment_allow', $object)) { //just article, not page or whatever!
+            $data['comment_allow'] = $data['article']['comment_allow'];
+            $data['comments'] = $CI->comment_model->list_by_article($data['article']['id_article']);
+        }
+
         // Options panel Top Addon
         $CI->load_addon_view(
             'comments', // Module folder
