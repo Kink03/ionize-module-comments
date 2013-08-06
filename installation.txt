@@ -1,0 +1,194 @@
+Comments module
+
+module version: x.x.xb
+Last update :		2013.08.05
+Ionize version :	1.0.4
+				
+--------------------------------------------------------------------------------
+
+Installation
+---------------------------------------
+
+1. Register the module through the Ionize Modules panel (click on "install")
+2.Ionize Comments Module -> Adding blog like comments capabilities to articles.
+(an example is given below of my current theme. You have to use your own.)
+
+<ion:page:article>		
+
+    <article class="post article">
+        <div class="postmetadataheader">
+            <h2 class="postheader"><span class="postheadericon"><a href="<ion:url />"><ion:title /></a></span></h2>
+        </div>
+        <div class="postheadericons metadata-icons">
+            <span class="postdateicon"><ion:date format="complete" class="date"/></span>
+            | <span class="postauthoricon"> <a href="#" title="Posts by Admin">Admin</a><!-- TODO --></span>
+        </div> <!-- /postheadericons metadata-icons -->
+        <div class="postcontent postcontent-0 clearfix">
+            <div class="content-layout">
+                <div class="content-layout-row">
+                    <div class="layout-cell layout-item-0" style="width: 100%">
+                        <h3 style="border-bottom: 1px solid #B4B4B6; padding-bottom: 5px">
+                            <ion:subtitle /></h3>
+
+                        <?php if ('<ion:index expression=(type=="picture") />') : ?>
+                            <div id="slider" class="image-caption-wrapper">				
+                                <ion:medias type="picture" >
+                                    <img src="<ion:media:src method='adaptive'  />" style="width: 100%; max-width:820px" alt="<ion:media:alt />" class="lightbox" />
+                                </ion:medias>
+                            </div><!-- /slider -->
+                        <?php endif; ?>
+
+                        <!-- content -->
+                        <ion:content link_key="title" link_title="subtitle" />
+
+                    </div>
+                </div> <!-- /content-layout-row -->
+            </div> <!-- /content-layout -->
+        </div> <!-- /postcontent postcontent-0 clearfix -->
+        <div class="postmetadatafooter">
+            <div class="postfootericons metadata-icons">
+                <?php if ('<ion:page:categories:category:title />' != '') : ?>				
+                    <span class="postcategoryicon">
+                        <ion:lang key="categories" /> : <ion:categories:list link="true" separator=", " />
+                    </span>
+                    | <?php endif; ?>
+                <span class="posttagicon">
+
+                    <!-- Tags -->
+                    <ion:article:tags:list link="true" separator=", " tag="span" class="categories" prefix="lang('title_tags') : " />
+                </span>
+                
+                <!-- display comments count only when comments are activated on article -->
+                <ion:comments:comments_allowed>
+                    | <span class="postcommentsicon">
+                        
+                            <a href="#reply" title="<ion:lang key='module_comments_fr_title_comments' />">
+                                <ion:comments_count/><ion:lang key="module_comments_fr_title_comments" /> »</a>
+                        
+                    </span>
+                </ion:comments:comments_allowed>
+
+            </div> <!-- /postfootericons metadata-icons -->
+        </div><!-- /postmetadatafooter -->
+
+        <ion:comments:comments_allowed>
+            <p><a class="more-link" href="#reply">Reply to this post</a></p>
+        </ion:comments:comments_allowed>
+
+        <!-- //*-------------------------------------------------------------------------------*//      -->
+        <hr />
+
+
+        <? // The "ion:comment_save" tag must be before "ion:comments" tag to have a correct display on new entry page refresh ?>
+        <ion:comments:comment_save />
+
+        <?
+        /*         * ********
+         * Displaying article admin options for comments, only displayed when the user is logged in and belongs to admin group
+         * ******** */
+        ?>
+        <ion:comments:comments_admin>
+            <a name="admin"></a>
+            <h4>Admin</h4>
+
+            <!-- Display a validation flash message when admin params saving happens -->
+            <ion:message tag="div" class="success" id="message">
+                Action succeded
+                <!-- Some JQuery to autohide the flash message, not mandatory at all -->
+                <script language="javascript">
+                    $('#message').delay(2000).fadeOut('slow');
+                </script>
+            </ion:message>
+
+            <!-- Displaying admin panel for the current article -->
+            <form method="post" action="">
+
+                <input type="hidden" name="comments_article_update" value="1"/>
+                <input type="checkbox" name="comments_allow" value="1" <ion:comments_allowed>checked</ion:comments_allowed> />
+
+                <label for="comments_allow"><span>Allow comments</span></label></p>	
+
+                <button class="button" type="submit">Save</button>
+            </form>
+
+        </ion:comments:comments_admin>
+
+        <hr />
+
+            
+        <!------------------------------------------------ 
+                Displaying comments, when the articles allows them 
+        -->
+
+        <ion:comments:comments_allowed>
+            <a name="comments"></a>
+
+            <div class="divider"></div>
+                <ol class="commentlist">
+
+                    <ion:comments>
+
+                        <li class="comment">					
+                            <div class="avatarimage">
+                                <img alt="Avatar Ionizecms User" src="<ion:gravatar default="identicon" />" height="50" width="50" />
+                            </div>
+
+                            <div class="comment-body">	
+                                <div class="comment-author">
+                                    <a href="#"><ion:author /></a> <span class="comment-date"><ion:date /></span>
+                                </div>
+                                <ion:content />
+                            </div>												
+
+
+                            <!-- Displaying admin panel for the current comment -->
+                        <ion:comments_admin>
+                            <form method="post" action="<ion:url/>#admin">
+                                <input type="hidden" name="id_article_comment" value="<ion:id/>"/>
+                                <input type="checkbox" name="comment_delete" value="1" />
+                                <label for="comments_allow"><span>Delete comment</span></label>	
+                                <button class="button" type="submit">Go</button>
+                            </form>
+                        </ion:comments_admin>
+                        <!-- End admin panel -->
+
+
+                        </li>
+
+                    </ion:comments>
+                </ol>
+            
+            <a name="reply"></a>
+
+
+
+            <!-- Display a validation flash message when on post saving success -->
+            <ion:success_message tag="div" class="success" id="message">
+                Your message has been added
+
+                <!-- Some JQuery to autohide the flash message, not mandatory at all -->
+                <script language="javascript">
+                    $('#message').delay(3000).fadeOut('slow');
+                </script>
+            </ion:success_message>
+
+            <!-- Display an error flash message when something bad happens while saving (form incomplete) -->
+            <ion:error_message tag="div" class="error" id="message">
+                Please check if you filled all required fields
+
+                <!-- Some JQuery to autohide the flash message, not mandatory at all -->
+                <script language="javascript">
+                    $('#message').delay(3000).fadeOut('slow');
+                </script>
+            </ion:error_message>
+
+
+            <ion:partial view="form_blog_comment" /> 
+
+        </ion:comments:comments_allowed>
+
+
+
+
+    </article>
+</ion:page:article>
