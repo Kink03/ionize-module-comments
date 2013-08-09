@@ -10,7 +10,7 @@
 				<label for="comments_allowed" title="<?= lang('module_comments_comment_allowed_help') ?>"><?= lang('module_comments_comment_allowed') ?></label>
 			</dt>
 			<dd>
-				<input data-id="<?=$article['id_article'] ?>" id="comments_allowed" name="comments_allowed" type="checkbox" class="inputcheckbox" <?php if($comment_allow): ?> checked="checked" <?php endif; ?>value="<?=$comment_allow ?>">
+				<input id="comments_allowed" name="comments_allowed" type="checkbox" class="inputcheckbox" <?php if ($comment_allow == 1):?> checked="checked" <?php endif;?> value="1">
 			</dd>
 		</dl>
 		<div>
@@ -102,24 +102,11 @@
 
     });
 
+	// comments_allowed XHR update
 	$('comments_allowed').addEvent('click', function(e)
-	{    
-		e.stop();
-		var id = this.getProperty('data-id');
-		var status = this.getProperty('value');
-		var url = admin_url + 'module/comments/comment/update_allow/' + id;
-
-		var data = {};
-        ION.sendData(url, data);
-
-        if (status == 0) {
-        	this.checked = true;
-        	this.setProperty('value', 1);
-        } else {
-        	this.checked = false;
-        	this.setProperty('value', 0);
-        };
-
+	{
+		var value = (this.checked) ? '1' : '0';
+		ION.JSON('article/update_field', {'field': 'comment_allow', 'value': value, 'id_article': $('id_article').value});
 	});
 	
 

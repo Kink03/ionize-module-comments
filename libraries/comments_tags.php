@@ -44,6 +44,9 @@ class Comments_Tags extends TagManager {
         "comments:error_message"                    => "tag_error_message", // Display error flash message
         "comments:comments_allowed"                 => "tag_comments_allowed",  // Display error flash message 
         "comments:author_site"                      => 'tag_author_site'
+
+        // TODO <ion:comments_count from="xx" /> ----> xx = 'parent' : check url and datas of the article link to OR 'ID:yy' : yy is the id number of the article for a specific query
+        // 
     );
 
     /**
@@ -146,6 +149,8 @@ class Comments_Tags extends TagManager {
 
     /*     * *********************************************************************
      * Display number of comments attached to the post
+     * <ion:comments_count from="parent" /> --> display comments of the linked article
+     * <ion:comments_count from="12" /> --> display comments of the article with ID = 12 (example)
      *
      */
 
@@ -156,9 +161,24 @@ class Comments_Tags extends TagManager {
         if (!isset($CI->comment_model))
             $CI->load->model('comments_comment_model', 'comment_model', true);
 
-        // Load comments
+        // Load comments of the current article
         $comments = $CI->comment_model->get_comments($tag->locals->article['id_article']);
 
+        $from = $tag->getAttribute('from');
+
+        if ($from == '') {
+            //return 'The attribute <b>"from"</b> is empty.';
+        } elseif ($from == 'parent') {
+            // Load comments of the linked article
+            $link_id = $tag->locals->article['link_id'];
+            if (!empty($link_id)) {
+                $link_id = explode(".", $link_id);
+                $comments = $CI->comment_model->get_comments($link_id[1]);
+            }            
+        } elseif (is_numeric($from)) {
+            // Load comments of the article with id xx
+            $comments = $CI->comment_model->get_comments($from);
+        }
 
         return sizeof($comments);
     }
