@@ -115,21 +115,7 @@ class Comment extends Module_Admin
         }
     }
 
-    /**
-     * upsate allow status
-     *
-     */
-    public function update_allow($id) {
-        if ($this->comment_model->update_allow($id)) {
-                //nothing to do
 
-            // Send the user a message
-            $this->success(lang('ionize_message_operation_ok'));
-        } else {
-            // Send the user a message
-            $this->error(lang('ionize_message_operation_nok'));
-        }
-    }
 
     
 

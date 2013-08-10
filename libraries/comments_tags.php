@@ -6,7 +6,7 @@
  * This class define the Comments module tags
  *
  * @package		Ionize
- * @author		
+ * @author		Pascal Gay, Victor Efremov, Laurent Brugière
  * @license		http://ionizecms.com/doc-license
  * @link		http://ionizecms.com
  * @since		Version 1.0.3
@@ -28,6 +28,7 @@ class Comments_Tags extends TagManager {
     public static $tag_definitions = array
         (
         "comments:comments"                         => "tag_comments", // Comments loop
+        "comments:comment"                          => "tag_comment", // Comment
         "comments:comment_form"                     => "tag_comment_form", // Display "comment" form
         "comments:comment_save"                     => "tag_comment_save", // Save new comment
         "comments:comments_count"                   => "tag_comments_count", // Return number of comments for an article
@@ -45,8 +46,8 @@ class Comments_Tags extends TagManager {
         "comments:comments_allowed"                 => "tag_comments_allowed",  // Display error flash message 
         "comments:author_site"                      => 'tag_author_site'
 
-        // TODO <ion:comments_count from="xx" /> ----> xx = 'parent' : check url and datas of the article link to OR 'ID:yy' : yy is the id number of the article for a specific query
-        // 
+        // Added <ion:comments_count from="xx" /> ----> xx = 'parent' : check url and datas of the article link to OR 'ID:yy' : yy is the id number of the article for a specific query
+        // Added <ion:comments_count verbose="true" />  display message about count of comments like '0' : leave your comment...
     );
 
     /**
@@ -164,8 +165,9 @@ class Comments_Tags extends TagManager {
         // Load comments of the current article
         $comments = $CI->comment_model->get_comments($tag->locals->article['id_article']);
 
+        // comments from : parent, current or ID article
+        // usage : <ion:comments:comments_count from="parent" /> or <ion:comments:comments_count from="12" />
         $from = $tag->getAttribute('from');
-
         if ($from == '') {
             //return 'The attribute <b>"from"</b> is empty.';
         } elseif ($from == 'parent') {
@@ -180,8 +182,35 @@ class Comments_Tags extends TagManager {
             $comments = $CI->comment_model->get_comments($from);
         }
 
-        return sizeof($comments);
+        $output = sizeof($comments);
+
+        // adding message with count
+        // usage <ion:comments:comments_count verbose="true" />
+        $verbose = $tag->getAttribute('verbose');
+        if ($verbose) {
+            $nb_comms = $output;
+            switch ($nb_comms) {
+                case '0':
+                case '':
+                    $output = lang('module_comments_count_0');
+                    break;
+            
+                case '1':
+                    $output = lang('module_comments_count_1');
+                    break;
+                
+                default:
+                    $output = preg_replace('/%s/', $nb_comms, lang('module_comments_count_x')) ;
+                    break;
+            }
+            if ($tag->locals->article['comment_allow'] == "0") {
+                $output = lang('module_comments_count_no');
+            }
+        }
+        
+        return $output;
     }
+
 
     /*     * *********************************************************************
      * Display comment's content
@@ -189,7 +218,8 @@ class Comments_Tags extends TagManager {
      */
 
     public static function tag_content(FTL_Binding $tag) {
-        return $tag->locals->comment["content"];
+        //return $tag->locals->comment["content"];
+        return self::output_value($tag, $tag->locals->comment["content"]);
     }
 
     /*     * *********************************************************************
@@ -225,6 +255,7 @@ class Comments_Tags extends TagManager {
 
     /*     * *********************************************************************
      * Display comment's creation date
+     * @TODO : create a diff date instead the date itself : ex (french) : 'Il y à 4 jours et 17 heures'
      *
      */
 
@@ -357,10 +388,11 @@ class Comments_Tags extends TagManager {
      */
 
     public static function tag_comments_allowed(FTL_Binding $tag) {
-        $result = $tag->locals->article['comment_allow'] == "1" ? $result = $tag->expand() : $result = "";
-
+        return $tag->locals->article['comment_allow'];
+        //$result = $tag->locals->article['comment_allow'] == "1" ? $result = $tag->expand() : $result = "Commentaires désactivés";
+        //$result = $tag->expand();
         //return $result;
-        return $result;
+        //return $result;
     }
 
 }

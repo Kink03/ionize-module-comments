@@ -40,8 +40,15 @@ $lang['module_comments_label_no_mod_admin']     = 'Comes from no admin';
 $lang['module_comments_label_mod_admin'] 		= 'Comes admin';
 $lang['module_comments_label_comment'] 			= 'Comment';
 
+//admin panel
 $lang['module_comments_options_title'] 			= 'Comments';
 $lang['module_comments_no_comment'] 			= 'No comment';
 $lang['module_comments_comment_allowed']		= 'Comments allowed';
 $lang['module_comments_comment_allowed_help']	= 'If checked, the article can be commented';
 $lang['module_comments_options_subtitle'] 		= 'Comments for this article';
+
+//frontoffice
+$lang['module_comments_count_0'] 				= 'Leave your comment';
+$lang['module_comments_count_1'] 				= '1 comment';
+$lang['module_comments_count_x'] 				= '%s comments';
+$lang['module_comments_count_no'] 				= 'comments unavailable';

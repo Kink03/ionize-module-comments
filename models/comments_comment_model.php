@@ -158,24 +158,6 @@ class Comments_comment_model extends Base_model {
 		return $query->result_array();
 	}
 
-	public function update_allow($id_article){
-        // Current status
-        $this->db->select('comment_allow');
-        $this->db->where('id_article', $id_article);
-        $query = $this->db->get('article');
-        $status = $query->result_array();
-   		$status = $status[0]['comment_allow'];
-        
-        // New status
-        ($status == 1) ? $status = 0 : $status = 1;
-
-        // Save     
-        $this->db->where('id_article', $id_article);
-        $this->db->set('comment_allow', $status);
-        $this->db->update('article');
-        
-        return true;
-     }  
-        
+       
         
 }
